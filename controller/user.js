@@ -5,6 +5,7 @@ class UserController {
     try {
       const id = await userService.createUser(req.body);
       res.status(201).json(id);
+      //add otp in db
     } catch (err) {
       console.error(err);
     }

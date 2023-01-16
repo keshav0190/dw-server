@@ -81,10 +81,20 @@ router.post("/user/verify", (request, response, next) => {
         }else{
             if(user.otp == request.body.eotp || user.otp == request.body.potp)
             {
-               //Change status to true return success 
+               //Change status to true return success
+                response.status(200).json({
+                    status_code:200,
+                    error: "User Verified",
+                    data:null
+                })
             }
             else{
                 //return faliur
+                response.status(200).json({
+                    status_code:401,
+                    error: "Incorrect OTP",
+                    data:null
+                })
             }
         }
     })
