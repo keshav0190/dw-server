@@ -9,6 +9,17 @@ class UserController {
       console.error(err);
     }
   }
+
+  async getUser(req, res) {
+    console.log('In get user',req.params.id);
+    try {
+      const id = await userService.getUser(req.params.id);
+      console.log('return data',id);
+      res.status(200).json(id);
+    } catch (err) {
+      console.error(err);
+    }
+  }
 }
 
 module.exports = new UserController();
