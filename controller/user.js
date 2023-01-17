@@ -15,6 +15,44 @@ class UserController {
         }
         const otp_id = await otpService.addOtp(odata);
 
+        //twillio
+        const accountSid = 'AC271a0eba0e4b3ee40855800a00ca5609';
+        const authToken = 'd22923beef89c35f71a4e112df9c3605';
+        const client = require('twilio')(accountSid, authToken);
+        const phoneNumber = '+91'+req.body.phoneNo; // the phone number to send the OTP to
+        client.messages
+          .create({
+            body: `Your OTP is: ${otp}`,
+            from: '+15627848573', // your Twilio phone number
+            to: phoneNumber
+          })
+          .then(message => console.log(message.sid));
+
+        //email code
+        var nodemailer = require('nodemailer');
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'keshav.axzora@gmail.com',
+            pass: 'ydoppjxujykuizzf'
+          }
+        });
+
+        var mailOptions = {
+          from: 'keshav.axzora@gmail.com',
+          to: req.body.email,
+          subject: 'Welcome Email',
+          text: 'Your OTP is '+otp
+        };
+
+        transporter.sendMail(mailOptions, function(error, info){
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.response);
+          }
+        });
+        
         const  apiKey = '523977b1-cfcd-11ea-9fa5-0200cd936042';        
         const sendotp = "https://2factor.in/API/V1/" + apiKey + "/SMS/" + '+91'+req.body.phoneNo + "/" + otp;
         let request_options = {
