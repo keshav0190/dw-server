@@ -70,8 +70,8 @@ router.post("/login", (request, response, next) => {
 router.post("/user/verify", (request, response, next) => {
     db("otp")
     .where({user_id: request.body.id})
-    .first()
-    .then(user => {
+    //.first()
+    .then(async user => {
         if(!user){
             response.status(200).json({
                 status_code:404,
@@ -79,9 +79,13 @@ router.post("/user/verify", (request, response, next) => {
                 data:null
             })
         }else{
-            if(user.otp == request.body.eotp || user.otp == request.body.potp)
+            console.log(user);
+            if(user[0].otp == request.body.eotp || user[0].otp == request.body.potp)
             {
+                let id = request.body.id;
                //Change status to true return success
+               const count = await db("user").where({id}).update({status: true});
+               console.log(count);
                 response.status(200).json({
                     status_code:200,
                     error: "User Verified",
