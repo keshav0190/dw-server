@@ -23,9 +23,7 @@ class UserController {
         };
         try {
           let otpResponse = await axios(request_options);
-          //console.log(otpResponse.data)  
-          //return otpResponse.data; 
-          response.status(200).json({
+          res.status(200).json({
             status_code: 403,
             error: "Not verified",
             data: {
@@ -35,9 +33,15 @@ class UserController {
         } catch (error) {
           return { Status: 'Failed', Details: 'Unable to send SMS' }
         }
+      }else{
+        res.status(500).json({
+          status_code: 500,
+          error: "Bad Request",
+          data: {
+            id: id
+          }
+        })
       }
-      res.status(201).json(id);
-      //add otp in db
     } catch (err) {
       console.error(err);
     }
