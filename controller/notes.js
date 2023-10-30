@@ -1,16 +1,15 @@
-const userService = require('../service/user');
-const otpService = require('../service/otp');
+const notesService = require('../service/notes');
 const axios = require('axios');
 
-class UserController {
-  async createUser(req, res) {
+class NotesController {
+  async createNotes(req, res) {
     try {
-      const id = await userService.createUser(req.body);
+      const id = await notesService.createnote(req.body);
       if(id)
       {
         res.status(200).json({
-          status_code: 403,
-          error: "Not verified",
+          status_code: 200,
+          message: "Note Added",
           data: {
             id: id
           }
@@ -18,7 +17,7 @@ class UserController {
       }else{
         res.status(500).json({
           status_code: 500,
-          error: "Bad Request",
+          message: "Bad Request",
           data: {
             id: id
           }
@@ -29,10 +28,10 @@ class UserController {
     }
   }
 
-  async getUser(req, res) {
+  async getNotes(req, res) {
     console.log('In get user',req.params.id);
     try {
-      const id = await userService.getUser(req.params.id);
+      const id = await notesService.getNote(req.params.id);
       console.log('return data',id);
       res.status(200).json(id);
     } catch (err) {
@@ -41,4 +40,4 @@ class UserController {
   }
 }
 
-module.exports = new UserController();
+module.exports = new NotesController();

@@ -1,6 +1,7 @@
 const express = require('express');
 const personController = require('../controller/person');
 const userController = require('../controller/user');
+const notesController = require('../controller/notes');
 const db = require('../db/db');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -9,6 +10,48 @@ const router = express.Router();
 router.post('/person', personController.createPerson);
 router.post('/user', userController.createUser);
 router.get('/user/home/:id', userController.getUser);
+router.post('/notes', notesController.createNotes);
+router.get("/notes/:id", (request, response, next) => {
+    db("notes")
+    .where({id: request.params.id})
+    .then(async note => {
+        if(!note){
+            response.status(200).json({
+                status_code:404,
+                error: "Invalid Id",
+                data:null
+            })
+        }else{
+            response.status(200).json({
+                status_code:200,
+                error: "Note details",
+                data:note
+            })
+        }
+    })
+})
+
+router.get("/notesbyuserid/:id", (request, response, next) => {
+    db("notes")
+    .where({user_id: request.params.id})
+    .then(async note => {
+        if(!note){
+            response.status(200).json({
+                status_code:404,
+                error: "No notes found",
+                data:null
+            })
+        }else{
+            response.status(200).json({
+                status_code:200,
+                error: "Note details",
+                data:note
+            })
+        }
+    })
+})
+
+
 router.post("/login", (request, response, next) => {
     db("user")
     .where({email: request.body.email})
@@ -31,11 +74,10 @@ router.post("/login", (request, response, next) => {
                         data: null
                     })
                 }else{
-                    if(user.status == false)
-                    {
+                    return jwt.sign(user, "SECRET", (error, token) => {
                         response.status(200).json({
-                            status_code: 403,
-                            error: "Not verified",
+                            status_code: 200,
+                            token: token,
                             data: {
                                 id: user.id,
                                 firstName: user.first_name,
@@ -44,22 +86,7 @@ router.post("/login", (request, response, next) => {
                                 email: user.email
                             }
                         })
-                    }
-                    else{
-                        return jwt.sign(user, "SECRET", (error, token) => {
-                            response.status(200).json({
-                                status_code: 200,
-                                token: token,
-                                data: {
-                                    id: user.id,
-                                    firstName: user.first_name,
-                                    lastName: user.last_name,
-                                    phoneNo: user.phone_no,
-                                    email: user.email
-                                }
-                            })
-                        })
-                    }
+                    })
                     
                 }
             })

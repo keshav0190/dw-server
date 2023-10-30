@@ -15,9 +15,18 @@ exports.up = function(knex) {
         table.increments('id');
         table.string('otp').notNullable().unique();
         table.integer('user_id').references('id').inTable('user');
+      })
+
+      .createTable('notes', (table) => {
+        table.increments('id');
+        table.integer('user_id').references('id').inTable('user');
+        table.string('title').notNullable();
+        table.string('body').notNullable();
+        table.boolean('status').notNullable().defaultTo(1);
+        table.timestamps(true, true);
       });
 };
 
 exports.down = function(knex) {
-    return knex.schema.dropTable('otp').dropTable('user');
+    return knex.schema.dropTable('notes').dropTable('otp').dropTable('user');
 };
