@@ -13,7 +13,6 @@ class UserDAO {
         last_name: lastName,
       })
       .returning('id');
-
     return id;
   }
 

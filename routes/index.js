@@ -6,6 +6,15 @@ const db = require('../db/db');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
+const Pool = require('pg').Pool
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'postgres',
+  password: 'admin',
+  port: 5432,
+})
+
 const router = express.Router();
 router.post('/person', personController.createPerson);
 router.post('/user', userController.createUser);
@@ -29,6 +38,55 @@ router.get("/notes/:id", (request, response, next) => {
             })
         }
     })
+})
+
+router.put("/notes/:id", (request, response, next) => {
+    const id = parseInt(request.params.id)
+    const { title, body } = request.body
+
+    pool.query(
+        'UPDATE notes SET title = $1, body = $2 WHERE id = $3',
+        [title, body, id],
+        (error, results) => {
+        if (error) {
+            console.log(error);
+            response.status(400).json({
+                status_code:404,
+                error: "There was some error while updating",
+                data:null
+            })
+        }
+        else{
+            response.status(200).json({
+                status_code:200,
+                error: "Note updated",
+                data: ''
+            })
+        }
+        }
+    )
+})
+
+router.delete("/notes/:id", (request, response, next) => {
+    const id = parseInt(request.params.id)
+
+    pool.query('DELETE FROM notes WHERE id = $1', [id], (error, results) => {
+        if (error) {
+            console.log(error);
+            response.status(400).json({
+                status_code:404,
+                error: "There was some error while deleting",
+                data:null
+            })
+        }
+        else{
+            response.status(200).json({
+                status_code:200,
+                error: "Note deleted",
+                data: ''
+            })
+        }
+  })
 })
 
 router.get("/notesbyuserid/:id", (request, response, next) => {
